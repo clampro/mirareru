@@ -1,0 +1,358 @@
+    let currentMovies; 
+    let allMovies;
+    let movieResults;
+
+    let searchModalOpen;
+
+    const searchInput = document.getElementById("movieSearch");
+
+    searchInput.addEventListener('keypress', (event) => {
+      if(event.key == 'Enter'){
+
+        movieResults = allMovies;
+        perform_search(searchInput.value);
+        searchInput.value = "";
+      }
+    })
+
+    async function fetch_movie_watch_list() {
+      //read database and return all movies
+        const localDisplayURL = "/list/movie";
+
+        const response = await fetch(localDisplayURL);
+        const data = await response.json();        
+
+        allMovies = data;
+        currentMovies = data;
+        
+        if (  allMovies.length > 0){
+          render_movie_cards(allMovies);
+        }else {
+          render_empty_list();
+        }
+    }
+
+    function render_empty_list(){
+      const listarea = document.getElementById("itemCards");
+      listarea.innerHTML = `
+                            <div class = "emptyList">
+                              <span><img src = "assets/sad.png" width = "128"></span>
+                              <span>It's kind of lonely here...</span>
+                              <span>Use the Search Above to add movies to your list and build an awesome collection!</span>
+                            </div>
+                           `
+    }
+
+    function filter_watched_movies() {
+      let watchedMovies = [];
+
+      for( let i=0;i<allMovies.length;i++){
+        let movie = allMovies[i];
+
+        if(movie.watched == 1){
+          watchedMovies.push(movie);
+        }
+      }
+      
+      if (watchedMovies.length > 0){
+        render_movie_cards(watchedMovies);
+      }else{
+        render_empty_list();
+      }
+    } //filter_watched_movies
+
+    function filter_unwatched_movies() {
+      let unwatchedMovies = [];
+
+      for( let i=0;i<allMovies.length;i++){
+        let movie = allMovies[i];
+
+        if(movie.watched == 0){
+          unwatchedMovies.push(movie);
+        }
+      }
+      
+      if (unwatchedMovies.length > 0){
+        render_movie_cards(unwatchedMovies);
+      }else{
+        render_empty_list();
+      }
+    } //filter_unwatched_movies    
+
+    function display_all_movies(){
+      if(allMovies.length > 0){
+        render_movie_cards(allMovies);
+      }else{
+        render_empty_list();
+      }
+    }
+
+    function render_movie_cards(movies) {
+
+      const movieCards = document.getElementById("itemCards");
+      movieCards.innerHTML = "";
+
+      for( let i=0;i<movies.length;i++){
+        let movie = movies[i];
+
+        //Detemine Watched Status Icon
+        let watchIcon = movie.watched === 1 ? "assets/watched_ok.png" : "assets/watched.png";
+        let watchTxt = movie.watched === 1 ? "Mark Unwatched" : "Mark Watched";        
+
+        const movieCard = document.createElement("div");
+          movieCard.className = 'itemCard';
+          movieCard.innerHTML = `<div class="poster">
+                                   <img src="http://image.tmdb.org/t/p/w92${movie.poster_path}" width="92">
+                                 </div>
+                                 <div class="movieInfo">
+                                   <h3>${movie.title}</h3>
+                                   <div class="movieDescription">${movie.overview}</div>
+                                   <div class="movie-footer">
+                                      <p>Release Date: ${movie.release_date}</p>
+                                        <div class="btnAdd">
+                                          <button type="submit" class="icon-button" id="btnyes-${movie.id}" onclick="toggleWatched(this.id)">
+                                             <img src=${watchIcon} width="24">
+                                             ${watchTxt}
+                                          </button>     
+                                          <button type="submit" class="icon-button" id="btnrmv-${movie.id}" onclick="remove_from_list(this.id)">
+                                            <img src="assets/remove.png" width="24">
+                                            Remove
+                                          </button>
+                                        </div>                                   
+                                   </div>
+                                   </div>
+                                 `
+        movieCards.appendChild(movieCard);            
+      }
+    } //render_movie_cards
+
+    async function perform_search(searchTerm) {
+      const localSearchURL = `/search/movie?${new URLSearchParams({query: searchTerm})}`;   
+
+      try {
+
+        const response = await fetch(localSearchURL);
+        const data = await response.json();
+
+        //Store results in a global variable
+        movieResults = data;
+
+        const statuses = await Promise.all(
+          movieResults.map(movie => check_if_movie_exists(movie.id))
+        );
+
+        movieResults.forEach((movie, index) => {
+          movie.existStatus = statuses[index];
+        });
+
+        toggle_results_window();
+        render_results_header(searchTerm);
+        render_result_cards(movieResults);
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    function toggle_results_window(){
+      const searchResults = document.getElementById("searchResults");
+      searchResults.style.display = searchResults.style.display == 'flex' ? 'none' : 'flex';
+      document.body.style.overflow = "hidden" //disable background scrolling
+      searchModalOpen = true; //for the key listener event to close modal
+    }    
+
+    function render_results_header(searchTerm) {
+      const resultsHeader = document.getElementById("resultsHeader");
+
+      resultsHeader.innerHTML = `
+                                  <div>
+                                    <h2>Search Results</h2>
+                                    <span class="searchTerm"><p>for "${searchTerm}"<p></span>
+                                  </div>
+                                  <div>
+                                    <button type="button" class="butx" id="butx" onclick="close_search_results()">
+                                      <img src="assets/close_wht.png" width="42" onmouseover="close_btn_hover(this);" onmouseout="close_btn_out(this);">
+                                    </button>
+                                  </div>
+                                `;
+    }
+
+    function render_result_cards(movies) {
+   
+      const resultCards = document.getElementById("resultCards");
+      resultCards.innerHTML = ""; //clear search results
+
+      for( let i=0;i<movies.length;i++){
+        let movie = movies[i];
+        
+        let buttonHTML;
+        if(movie.existStatus == true){
+          buttonHTML = `<button type="submit" class="icon-button" id=btnadd-${movie.id}">
+                          <img src="assets/folder_check.png" width="24">
+                          Already in Watchlist 
+                        </button>
+                       `                 
+        }else{
+          buttonHTML = `<button type="submit" class="icon-button" id=btnadd-${movie.id} onclick="add_to_watchlist(this.id)">
+                          <img src="assets/add_to_list.png" width="24">
+                          Add to Watchlist
+                        </button>
+                       `
+        }
+
+        const resultCard = document.createElement("div");
+        resultCard.className = "resultCard";
+        resultCard.innerHTML = `
+                                 <div class = "poster">
+                                   <img src="http://image.tmdb.org/t/p/w92${movie.poster_path}" width="92">
+                                 </div>
+                                 <div class="movieInfo">
+                                  <h3>${movie.title}</h3>
+                                  <div class="movieDescription">${movie.overview}</div>
+                                  <div class="movie-footer">
+                                    <p>Release Date: ${movie.release_date}</p>
+                                      <div class="btnAdd">
+                                        ${buttonHTML}
+                                      </div>
+                                  </div>
+                                 </div>
+                               `
+        resultCards.appendChild(resultCard);
+      }
+    }
+    
+    async function check_if_movie_exists(movieID) {
+      const localExistsURL = `/exists/movie?${new URLSearchParams({id: movieID})}`;
+      const response = await fetch(localExistsURL); 
+      const data = await response.json();  
+      
+      return data.exists;
+    }
+
+    function close_search_results() {
+      document.getElementById("searchResults").style.display = "none";
+      document.body.style.overflow = "auto";  // Re-enable scrolling
+    }
+    
+    async function toggleWatched(buttonID){
+
+      const idArray = buttonID.split("-");
+      let movieID = idArray[1];
+
+      const localWatchedURL = "/watched/movie";          
+
+      const selectedMovie = allMovies.find(({ id }) => id === Number(movieID));
+
+      const options = {
+                        method: 'POST',
+                        body: JSON.stringify({id: selectedMovie.id}),
+                        headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json',
+                        }
+                      }; 
+
+      const response = await fetch(localWatchedURL, options);
+      const data = await response.json();      
+      
+      let button = document.getElementById(`btnyes-${selectedMovie.id}`);
+     
+      if (data.status == '1'){
+        button.innerHTML = `<img src="assets/watched_ok.png" width="24"> Mark Unwatched`;
+        selectedMovie.watched = 1;
+      }else {
+        button.innerHTML = `<img src="assets/watched.png" width="24"> Mark Watched`;
+        selectedMovie.watched = 0;
+      }
+    } //toggleWatched
+
+    async function remove_from_list(buttonID) {
+        const idArray = buttonID.split("-");
+        let movieID = idArray[1];
+        
+        const localRemoveURL = `/remove/movie?${new URLSearchParams({id: movieID})}`;
+        
+        if (confirm('Remove movie from Watchlist?')){
+          const response = await fetch(localRemoveURL);
+          const data = await response.json();
+
+          const updatedMovies = allMovies.filter(movie => movie.id !== Number(movieID));
+
+          allMovies = updatedMovies;
+          render_movie_cards(allMovies);
+        }
+    } //remove_from_list
+
+    function close_btn_hover(element){
+      element.setAttribute('src', 'assets/close_x.png');
+    }
+
+    function close_btn_out(element){
+      element.setAttribute('src', 'assets/close_wht.png');
+    }
+
+    async function add_to_watchlist(buttonID) {
+      const idArray = buttonID.split("-");
+      let movieID = idArray[1];   
+      
+      const selectedMovie = movieResults.find(({ id }) => id === Number(movieID));
+      
+      try {
+
+        const insertURL = "/insert/movie";
+        const options = {
+              method: 'POST',
+              body: JSON.stringify(selectedMovie),
+              headers: {
+                'Content-Type': 'application/json',
+                'accept': 'application/json',
+              }
+            };
+        const response = await fetch(insertURL, options);
+
+        if (response.status == 200){
+          let addBtn = document.getElementById(buttonID);
+          addBtn.innerHTML = `
+                              <button type="submit" class="icon-button" id=${buttonID}>
+                                <img src="assets/folder_check.png" width="24">
+                                Added to Watchlist
+                              </button>
+                             `
+          addBtn.disabled = true;
+          selectedMovie.watched = 0; //set status to unwatched so filters work
+          allMovies.push(selectedMovie);
+          render_movie_cards(allMovies);
+        }
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    
+    document.addEventListener("keydown", function(event) {
+      if (event.keyCode == 83) {
+        //Only prevent default and focus if the search box is NOT already focused
+        if (document.activeElement !== document.getElementById("movieSearch")) {
+          event.preventDefault();
+          document.getElementById("movieSearch").focus();
+        }
+       }
+    });
+
+    const searchResultsModal = document.getElementById("searchResults");
+
+    searchResultsModal.addEventListener('click', (event)=> {
+      if (event.target === searchResultsModal){
+        close_search_results();
+      }
+    });
+
+    document.addEventListener("keydown", function(event) {
+      if (event.keyCode == 27){ //escape key pressed
+        if (searchModalOpen == true){
+          searchModalOpen = false;
+          close_search_results();
+        }
+      }
+    });
+

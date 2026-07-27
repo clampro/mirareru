@@ -19,6 +19,10 @@ html {
     padding: 20px;
 }
 
+hr{
+  width: 80vw;
+}
+
 .movieCarousel, .seriesCarousel, .animeCarousel {
     display: flex;
     gap: 20px;
