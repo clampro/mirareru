@@ -126,7 +126,7 @@ const animeExists         = db.prepare('SELECT id FROM anime WHERE id = ?');
 //------------------------------------------------------------------------------//
 const app = express();
 
-app.use(cors());
+app.use(cors());                  //Needs to change to be more secure
 app.use(express.json());  
 app.use(express.static("public"));
 
@@ -216,7 +216,7 @@ app.get("/search/series", async(request, response,)=>{
 // Search for anime
 app.get("/search/anime", async(request, response,)=>{
 
-  const searchTerm = request.query.q;
+  const searchTerm = request.query.query;
 
   try{
     //construct GraphGL query
