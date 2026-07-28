@@ -295,11 +295,11 @@ body .searchbox {
 }
 
 
-.movieInfo {
+.itemInfo {
     flex: 1;
 }
 
-.movieDescription {
+.itemDescription {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   line-clamp: 3;
@@ -309,13 +309,13 @@ body .searchbox {
 
 
 
-.movie-footer {
+.item-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.movie-footer p {
+.item-footer p {
     margin: 0;
 }
 
