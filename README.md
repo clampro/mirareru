@@ -42,6 +42,8 @@ The search bar was found on [Medium](https://medium.com/100-days-in-kyoto-to-cre
 
 Various bits and pieces were lifted off straight from the internet (like Stackoverflow and other sources) and I had to resort to asking AI for help regarding CSS where I am clueless. 
 
+Important: Please be very careful if you plan to expose this app to the internet. I have not taken any particular steps to harden the security, due to my lack of knowledge of doing so. 
+
 ### Roadmap
 
 - [ ] Refactor code (right now it's a mess)
