@@ -204,13 +204,16 @@ async function perform_search(searchTerm){
         //Store results in a global variable
         itemResults = data;
 
-        const statuses = await Promise.all(
-            itemResults.map(item => check_if_item_exists(item.id))
-        );
+        if (response.status == 200){
+
+            const statuses = await Promise.all(
+                itemResults.map(item => check_if_item_exists(item.id))
+            );
         
-        itemResults.forEach((item, index) => {
-          item.existStatus = statuses[index];
-        });
+            itemResults.forEach((item, index) => {
+            item.existStatus = statuses[index];
+            });
+        }      
 
         toggle_results_window();
         render_results_header(searchTerm);
