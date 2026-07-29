@@ -8,6 +8,8 @@ I have beek keeping a note on my phone to note things I want to watch. I have al
 
 It uses the TMDB API to search for movies and series and the AniList API to search for anime. 
 
+![demo](mirareru.gif)
+
 ### Prerequisites
 
 You need to register for an API Token with TMDB.

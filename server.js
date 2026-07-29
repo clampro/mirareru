@@ -272,7 +272,7 @@ app.get("/search/anime", async(request, response,)=>{
       title_native: anime.title.native,
       title_romaji: anime.title.romaji,
       poster_path: anime.coverImage.large,
-      overview: anime.description.replace(/<br\s*\/?>/gi, "\n"),
+      overview: (anime.description === null) ? "" : anime.description.replace(/<br\s*\/?>/gi, "\n"),
       first_air_date: formatAniListDate(anime.startDate),
     }));
 
