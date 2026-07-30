@@ -148,6 +148,11 @@ app.get("/search/movie", async(request, response,)=>{
   try {
     // Setup Search endpoint
     var search_url = new URL(process.env.SEARCH_MOVIES);
+
+    if (!request.query.query){
+      return response.status(400).json({ error: 'Undefined search query' });
+    }
+
     search_url.searchParams.append("query", request.query.query);
     search_url.searchParams.append("include_adult", "false");
 
@@ -177,6 +182,11 @@ app.get("/search/series", async(request, response,)=>{
   try {
     // Setup Search endpoint
     var search_url = new URL(process.env.SEARCH_SERIES);
+
+    if (!request.query.query){
+      return response.status(400).json({ error: 'Undefined search query' });
+    }    
+
     search_url.searchParams.append("query", request.query.query);
     search_url.searchParams.append("include_adult", "false");
 
@@ -217,6 +227,10 @@ app.get("/search/series", async(request, response,)=>{
 app.get("/search/anime", async(request, response,)=>{
 
   const searchTerm = request.query.query;
+
+    if (!request.query.query){
+      return response.status(400).json({ error: 'Undefined search query' });
+    }  
 
   try{
     //construct GraphGL query

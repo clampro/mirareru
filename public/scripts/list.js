@@ -170,13 +170,13 @@ function render_item_cards(items){
         itemCard.className = 'itemCard';
         itemCard.innerHTML = `
                                 <div class = "poster">
-                                    <img src="${global_config.posterURL(item.poster_path)}" width = "92">
+                                    <img src="${escapeHtml(global_config.posterURL(item.poster_path))}" width = "92">
                                 </div>
                                 <div class = "itemInfo">
-                                    <h3>${item[global_config.titleField]}</h3>
-                                    <div class="itemDescription">${item[global_config.overviewField]}</div>
+                                    <h3>${escapeHtml(item[global_config.titleField])}</h3>
+                                    <div class="itemDescription">${escapeHtml(item[global_config.overviewField])}</div>
                                     <div class = "itemFooter">
-                                        <p>Release Date: ${item[global_config.dateField]}</p>
+                                        <p>Release Date: ${escapeHtml(item[global_config.dateField])}</p>
                                             <div class = "btnAdd">
                                                 <button type="submit" class="icon-button" id="btnyes-${item.id}" onclick="toggleWatched(this.id)">
                                                     <img src=${watchIcon} width="24">
@@ -272,13 +272,13 @@ function render_result_cards(items){
         resultCard.className = "resultCard";
         resultCard.innerHTML = `
                                  <div class = "poster">
-                                   <img src="${global_config.posterURL(item.poster_path)}" width="92">
+                                   <img src="${escapeHtml(global_config.posterURL(item.poster_path))}" width="92">
                                  </div>
                                  <div class="itemInfo">
-                                  <h3>${item[global_config.titleField]}</h3>
-                                  <div class="itemDescription">${item[global_config.overviewField]}</div>
+                                  <h3>${escapeHtml(item[global_config.titleField])}</h3>
+                                  <div class="itemDescription">${escapeHtml(item[global_config.overviewField])}</div>
                                   <div class="item-footer">
-                                    <p>Release Date: ${item[global_config.dateField]}</p>
+                                    <p>Release Date: ${escapeHtml(item[global_config.dateField])}</p>
                                       <div class="btnAdd">
                                         ${buttonHTML}
                                       </div>
@@ -294,7 +294,6 @@ async function check_if_item_exists(itemID) {
     const localExistsURL = `${global_config.existsURL}?${new URLSearchParams({id: itemID})}`;
     const response = await fetch(localExistsURL); 
     const data = await response.json();  
-    console.log(data);
     return data.exists;
 }//check_if_item_exists
 
@@ -420,3 +419,9 @@ document.addEventListener("keydown", function(event) {
         }
       }
     });
+
+    function escapeHtml(str){
+        const div = document.createElement("div");
+        div.textContent = str ?? "";
+        return div.innerHTML;
+    }

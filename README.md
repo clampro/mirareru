@@ -50,3 +50,5 @@ Important: Please be very careful if you plan to expose this app to the internet
 - [ ] Add custom filters for watch lists (like genres, text search, etc)
 - [ ] Add item detail card
 - [ ] Make app multi user and add the abilty to crate shared lists between users
+
+I would welcome any suggestions, critique etc. You can reach me on Reddit [/u/clampropoulos](https://www.reddit.com/user/clampropoulos)
