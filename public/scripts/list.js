@@ -58,6 +58,10 @@ let global_config;          //entity configuration
 
 const searchInput = document.getElementById("itemSearch");
 
+//handle screen resizing
+const mobile = window.matchMedia("(max-width: 600px)");
+mobile.addEventListener("change", handleScreenSize);
+
 //----------------------------------------------------------------//
 
 function init(){
@@ -103,7 +107,7 @@ function render_empty_list(){
     const listarea = document.getElementById("itemCards");
     listarea.innerHTML = `
                             <div class = "emptyList">
-                                <span><img src = "assets/sad/png" width = "128"></span>
+                                <span><img src = "assets/sad.png" width = "128"></span>
                                 <span>It's kind of lonely here...</span>
                                 <span>Use the Search above to add ${global_config.entityTextPlural} to your collection!</span>
                             </div>
@@ -175,7 +179,7 @@ function render_item_cards(items){
                                 <div class = "itemInfo">
                                     <h3>${escapeHtml(item[global_config.titleField])}</h3>
                                     <div class="itemDescription">${escapeHtml(item[global_config.overviewField])}</div>
-                                    <div class = "itemFooter">
+                                    <div class = "item-footer">
                                         <p>Release Date: ${escapeHtml(item[global_config.dateField])}</p>
                                             <div class = "btnAdd">
                                                 <button type="submit" class="icon-button" id="btnyes-${item.id}" onclick="toggleWatched(this.id)">
@@ -247,6 +251,18 @@ function render_results_header(searchTerm) {
 }//render_results_header
 
 function render_result_cards(items){
+
+    let alreadyIn;
+    let addTo;
+
+    if(mobile.matches){
+        alreadyIn = 'In List';
+        addTo     = 'Add';
+    }else{
+        alreadyIn = 'Already in Watchlist';
+        addTo     = 'Add to Watchlist';
+    }
+    
     const resultCards = document.getElementById("resultCards");
     resultCards.innerHTML = "";
 
@@ -258,13 +274,13 @@ function render_result_cards(items){
         if(item.existStatus == true){
           buttonHTML = `<button type="submit" class="icon-button" id=btnadd-${item.id}">
                           <img src="assets/folder_check.png" width="24">
-                          Already in Watchlist 
+                          <span class="alreadyIn">${alreadyIn}</span>
                         </button>
                        `                 
         }else{
           buttonHTML = `<button type="submit" class="icon-button" id=btnadd-${item.id} onclick="add_to_watchlist(this.id)">
                           <img src="assets/add_to_list.png" width="24">
-                          Add to Watchlist
+                          <span class="addTo">${addTo}</span>
                         </button>
                        `
         } 
@@ -362,6 +378,13 @@ async function add_to_watchlist(buttonID){
 
     const selectedItem = itemResults.find(({ id }) => id === Number(itemID));
 
+    let addedTxt;
+    if(mobile.matches){
+        addedTxt = 'Added';
+    }else{
+        addedTxt = 'Added to Watchlist';
+    }
+
     try{
 
         const options = {
@@ -379,7 +402,7 @@ async function add_to_watchlist(buttonID){
             addBtn.innerHTML = `
                                   <button type="submit" class="icon-button" id=${buttonID}>
                                     <img src="assets/folder_check.png" width="24">
-                                    Added to Watchlist
+                                    <span class="added">${addedTxt}</span>
                                   </button>
                                 `
             addBtn.disabled = true;
@@ -425,3 +448,36 @@ document.addEventListener("keydown", function(event) {
         div.textContent = str ?? "";
         return div.innerHTML;
     }
+
+    function handleScreenSize(){
+        const addToBtns  = document.getElementsByClassName("addTo");
+        const inListBtns = document.getElementsByClassName("alreadyIn");
+        const addedBtns  = document.getElementsByClassName("added");
+        
+        for(let i=0;i<addToBtns.length;i++){
+            let addToBtn = addToBtns[i];
+            if(mobile.matches){
+                addToBtn.innerHTML = 'Add';    
+            }else{
+                addToBtn.innerHTML = 'Add to Watchlist';
+            }
+        }
+
+        for(let i=0;i<inListBtns.length;i++){
+            let inListBtn = inListBtns[i];
+            if(mobile.matches){
+                inListBtn.innerHTML = 'In List';    
+            }else{
+                inListBtn.innerHTML = 'Already in Watchlist';
+            }
+        }        
+
+        for(let i=0;i<addedBtns.length;i++){
+            let addedBtn = addedBtns[i];
+            if(mobile.matches){
+                addedBtn.innerHTML = 'Added';
+            }else{
+                addedBtn.innerHTML = 'Added to Watchlist';
+            }
+        }
+    };

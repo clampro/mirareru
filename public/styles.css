@@ -37,7 +37,8 @@ hr{
     scroll-snap-align: start;
     position: relative;
     flex-shrink: 0;         /* prevents shrinking */
-    width: 150px;
+    width: 20dvw;
+    max-width: 150px;
     transition: transform 0.2s ease;
 }
 
@@ -67,6 +68,13 @@ hr{
     font-weight: bold;
 
     border-radius: 0 0 8px 8px;
+}
+
+@media (max-width: 485px){
+
+  .vName{
+    font-size: 12px;
+  }
 }
 
 .searchbox {
@@ -202,14 +210,18 @@ body .searchbox {
   justify-content: center;
 }
 
+.emptyList span{
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+  text-align: center;
+}
+
 .itemCards {
     display: flex;
     flex-direction: column;
     padding: 15px;
     gap: 10px;
-    /* align-items: center;
-    justify-content: center;
-    max-width: 800px; */
 }
 
 .itemCard {
@@ -263,7 +275,7 @@ body .searchbox {
   justify-content: space-between;
   align-items: center;
   background-color: #3d3b3b;
-  padding: 20px;
+  padding: 1em;
 }
 
 .resultCard {
@@ -304,7 +316,8 @@ body .searchbox {
   -webkit-line-clamp: 3;
   line-clamp: 3;
   -webkit-box-orient: vertical;
-  overflow: hidden;    
+  overflow: hidden; 
+  font-size: min(3vmin, 1em);   
 }
 
 
@@ -313,6 +326,7 @@ body .searchbox {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-size: min(3vmin, 1em);   
 }
 
 .item-footer p {
@@ -358,7 +372,7 @@ body .searchbox {
   transform: translateX(-50%);
   display: flex;
   width: fit-content;
-  gap: 80px;
+  gap: min(80px, 10vw);
   padding: 12px 20px;
   margin: auto;
   align-items: center;

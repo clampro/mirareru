@@ -16,7 +16,9 @@ You need to register for an API Token with TMDB.
 
 ### Instructions
 
-1. Run npm install to get all required packages. You should end up with the following:
+1. Install [node.js](https://nodejs.org/en/download)
+
+2. Run npm install to get all required packages. You should end up with the following:
     ```
         better-sqlite3
         cors
@@ -24,15 +26,14 @@ You need to register for an API Token with TMDB.
         express    
     ```
 
-2. Copy the .env.example to .env and set the  database location (if you wish to change it), the port you want the express server to listen to and the API Token you got from TMDB. Please note, that you might have to create the directory if it does not exist, otherwise you will get an error at the next step.   
+3. Copy the .env.example to .env and set the  database location (if you wish to change it), the port you want the express server to listen to and the API Token you got from TMDB. Please note, that you might have to create the directory if it does not exist, otherwise you will get an error at the next step.   
 
-3. Start the server
+4. Start the server
     ```
         node server.js
     ```
 
-4. Point your browser to localhost:PORT or to [server.ip]:port
-
+5. Point your browser to localhost:PORT or to [server.ip]:port
 
 ### Disclaimer
 
@@ -46,7 +47,9 @@ Important: Please be very careful if you plan to expose this app to the internet
 
 ### Roadmap
 
+- [X] Make layout mobile friendly (looks ok on my mobile, far from proper responsive design)
 - [ ] Refactor code (right now it's a mess)
+- [ ] Add functionality on Home screen (mark watched, remove from list etc)
 - [ ] Add custom filters for watch lists (like genres, text search, etc)
 - [ ] Add item detail card
 - [ ] Make app multi user and add the abilty to crate shared lists between users
