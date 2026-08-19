@@ -276,7 +276,6 @@ app.get("/search/anime", async(request, response,)=>{
     });
 
     const data = await aniResponse.json();
-    console.log(data.data.Page.media);
 
     //Map Results to return structure
     const animeResults = data.data.Page.media.map(anime =>({
